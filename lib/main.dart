@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'janaza_page.dart';
+import 'duas_page.dart';
 
 void main() => runApp(const DeenApp());
 
@@ -153,7 +154,7 @@ class HomePage extends StatelessWidget {
         QuickTile('Tasbih', Icons.touch_app, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TasbihPage()))),
         QuickTile('Qibla', Icons.explore_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QiblaPage()))),
         QuickTile('Quran', Icons.menu_book, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Quran', icon: Icons.menu_book, detail: 'Quran reading module will be connected here.')))),
-        QuickTile('Duas', Icons.volunteer_activism, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Duas & Azkar', icon: Icons.volunteer_activism, detail: 'Daily duas and azkar collection.')))),
+        QuickTile('Duas', Icons.volunteer_activism, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DuasPage()))),
         QuickTile('Calendar', Icons.calendar_month, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar setup will be added.')))),
         QuickTile('Zakat', Icons.account_balance_wallet_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ZakatPage()))),
         QuickTile('Janaza', Icons.mosque_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JanazaPage()))),
@@ -340,7 +341,7 @@ class MorePage extends StatelessWidget {
       ('Qibla Direction', Icons.explore, const QiblaPage()),
       ('Digital Tasbih', Icons.touch_app, const TasbihPage()),
       ('Quran', Icons.menu_book, const SimpleInfoPage(title: 'Quran', icon: Icons.menu_book, detail: 'Quran reading and audio module.')),
-      ('Duas & Azkar', Icons.volunteer_activism, const SimpleInfoPage(title: 'Duas & Azkar', icon: Icons.volunteer_activism, detail: 'Daily duas and azkar collection.')),
+      ('Duas & Azkar', Icons.volunteer_activism, const DuasPage()),
       ('Islamic Calendar', Icons.calendar_month, const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar and events.')),
       ('Zakat Calculator', Icons.account_balance_wallet, const ZakatPage()),
       ('Janaza ka tariqa', Icons.mosque_outlined, const JanazaPage()),
