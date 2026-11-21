@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'janaza_page.dart';
 
 void main() => runApp(const DeenApp());
 
@@ -155,6 +156,7 @@ class HomePage extends StatelessWidget {
         QuickTile('Duas', Icons.volunteer_activism, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Duas & Azkar', icon: Icons.volunteer_activism, detail: 'Daily duas and azkar collection.')))),
         QuickTile('Calendar', Icons.calendar_month, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar setup will be added.')))),
         QuickTile('Zakat', Icons.account_balance_wallet_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ZakatPage()))),
+        QuickTile('Janaza', Icons.mosque_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JanazaPage()))),
       ])),
     ],
   ));
@@ -341,6 +343,7 @@ class MorePage extends StatelessWidget {
       ('Duas & Azkar', Icons.volunteer_activism, const SimpleInfoPage(title: 'Duas & Azkar', icon: Icons.volunteer_activism, detail: 'Daily duas and azkar collection.')),
       ('Islamic Calendar', Icons.calendar_month, const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar and events.')),
       ('Zakat Calculator', Icons.account_balance_wallet, const ZakatPage()),
+      ('Janaza ka tariqa', Icons.mosque_outlined, const JanazaPage()),
       ('Settings', Icons.settings, const SimpleInfoPage(title: 'Settings', icon: Icons.settings, detail: 'App preferences, language, privacy and notifications.')),
       ('About DEEN', Icons.info_outline, const SimpleInfoPage(title: 'About DEEN', icon: Icons.info_outline, detail: 'Your Islamic Digital World.')),
     ].map((item) => Padding(padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5), child: DeenCard(
