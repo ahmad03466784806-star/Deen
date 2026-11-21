@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'janaza_page.dart';
 import 'duas_page.dart';
+import 'deen_khazana_page.dart';
 
 void main() => runApp(const DeenApp());
 
@@ -158,6 +159,7 @@ class HomePage extends StatelessWidget {
         QuickTile('Calendar', Icons.calendar_month, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar setup will be added.')))),
         QuickTile('Zakat', Icons.account_balance_wallet_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ZakatPage()))),
         QuickTile('Janaza', Icons.mosque_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JanazaPage()))),
+        QuickTile('Deen ka Khazana', Icons.auto_stories, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DeenKhazanaPage()))),
       ])),
     ],
   ));
