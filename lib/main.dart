@@ -120,49 +120,176 @@ class DeenCard extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   @override
-  Widget build(BuildContext context) => DeenBackground(child: ListView(
-    padding: const EdgeInsets.only(bottom: 24),
-    children: [
-      PageHeader('Assalamu Alaikum', subtitle: 'Welcome to DEEN', trailing: CircleAvatar(
-        backgroundColor: gold.withOpacity(.16), child: const Icon(Icons.notifications_none, color: gold))),
-      Padding(padding: const EdgeInsets.symmetric(horizontal: 18), child: DeenCard(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 23, color: gold, height: 1.8)),
-          const SizedBox(height: 8),
-          const Text('Your day, guided by prayer', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: cream)),
-          const SizedBox(height: 5),
-          Text('Prayer schedule and Islamic date can be configured in Settings.',
-            style: TextStyle(color: cream.withOpacity(.65), fontSize: 12)),
-          const SizedBox(height: 14),
-          Row(children: const [
-            Icon(Icons.calendar_month, color: gold, size: 18),
-            SizedBox(width: 7), Text('Hijri date: configure location & calendar', style: TextStyle(color: cream, fontSize: 12)),
-          ]),
-        ]),
-      )),
-      const SectionTitle('Prayer times'),
-      Padding(padding: const EdgeInsets.symmetric(horizontal: 18), child: DeenCard(child: Column(children: const [
-        PrayerRow('Fajr', '—:—', Icons.nights_stay_outlined),
-        PrayerRow('Dhuhr', '—:—', Icons.wb_sunny_outlined),
-        PrayerRow('Asr', '—:—', Icons.sunny),
-        PrayerRow('Maghrib', '—:—', Icons.wb_twilight),
-        PrayerRow('Isha', '—:—', Icons.dark_mode_outlined),
-      ]))),
-      const SectionTitle('Quick access'),
-      Padding(padding: const EdgeInsets.symmetric(horizontal: 18), child: Wrap(spacing: 10, runSpacing: 10, children: [
-        QuickTile('Tasbih', Icons.touch_app, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TasbihPage()))),
-        QuickTile('Qibla', Icons.explore_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QiblaPage()))),
-        QuickTile('Quran', Icons.menu_book, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Quran', icon: Icons.menu_book, detail: 'Quran reading module will be connected here.')))),
-        QuickTile('Duas', Icons.volunteer_activism, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DuasPage()))),
-        QuickTile('Calendar', Icons.calendar_month, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar setup will be added.')))),
-        QuickTile('Zakat', Icons.account_balance_wallet_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ZakatPage()))),
-        QuickTile('Janaza', Icons.mosque_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JanazaPage()))),
-        QuickTile('Deen ka Khazana', Icons.auto_stories, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DeenKhazanaPage()))),
-      ])),
-    ],
-  ));
+  Widget build(BuildContext context) => DeenBackground(
+    child: CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              Row(
+                children: [
+                  Container(
+                    width: 46, height: 46,
+                    decoration: BoxDecoration(
+                      color: gold.withOpacity(.14),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: gold.withOpacity(.35)),
+                    ),
+                    child: const Icon(Icons.mosque_outlined, color: gold, size: 27),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('DEEN', style: TextStyle(color: gold, fontSize: 12, letterSpacing: 2.4, fontWeight: FontWeight.w800)),
+                      SizedBox(height: 2),
+                      Text('Assalamu Alaikum', style: TextStyle(color: cream, fontSize: 22, fontWeight: FontWeight.w800)),
+                    ],
+                  )),
+                  IconButton(
+                    tooltip: 'Notifications',
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Notifications will be available after setup.')),
+                    ),
+                    icon: const Icon(Icons.notifications_none_rounded, color: cream),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft, end: Alignment.bottomRight,
+                    colors: [Color(0xFF176B5B), Color(0xFF083A36), Color(0xFF062B2B)],
+                  ),
+                  border: Border.all(color: gold.withOpacity(.42)),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(.22), blurRadius: 22, offset: const Offset(0, 10))],
+                ),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Center(child: Text(
+                    'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: gold, fontSize: 23, height: 1.9),
+                  )),
+                  const SizedBox(height: 12),
+                  const Text('Your day, guided by prayer', style: TextStyle(color: cream, fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 6),
+                  Text('A peaceful space for worship, learning and daily reminders.',
+                    style: TextStyle(color: cream.withOpacity(.78), height: 1.45)),
+                  const SizedBox(height: 17),
+                  Row(children: [
+                    const Icon(Icons.calendar_month_outlined, color: gold, size: 19),
+                    const SizedBox(width: 8),
+                    const Expanded(child: Text('Hijri date', style: TextStyle(color: cream, fontWeight: FontWeight.w600))),
+                    Text('Location setup required', style: TextStyle(color: cream.withOpacity(.7), fontSize: 11)),
+                  ]),
+                ]),
+              ),
+              const SizedBox(height: 24),
+              Row(children: [
+                const Expanded(child: SectionTitle('Prayer times')),
+                TextButton.icon(
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => const SimpleInfoPage(
+                      title: 'Prayer time settings', icon: Icons.access_time,
+                      detail: 'Choose your city, calculation method and Asr juristic setting before displaying prayer times.',
+                    ),
+                  )),
+                  icon: const Icon(Icons.tune, size: 16, color: gold),
+                  label: const Text('Setup', style: TextStyle(color: gold)),
+                ),
+              ]),
+              DeenCard(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                child: Column(children: const [
+                  PrayerRow('Fajr', '—:—', Icons.nights_stay_outlined),
+                  Divider(color: Colors.white12, height: 1),
+                  PrayerRow('Dhuhr', '—:—', Icons.wb_sunny_outlined),
+                  Divider(color: Colors.white12, height: 1),
+                  PrayerRow('Asr', '—:—', Icons.sunny),
+                  Divider(color: Colors.white12, height: 1),
+                  PrayerRow('Maghrib', '—:—', Icons.wb_twilight),
+                  Divider(color: Colors.white12, height: 1),
+                  PrayerRow('Isha', '—:—', Icons.dark_mode_outlined),
+                ]),
+              ),
+              const SizedBox(height: 8),
+              Text('Prayer timings will appear after location and calculation settings are configured.',
+                style: TextStyle(color: cream.withOpacity(.58), fontSize: 11, height: 1.4)),
+              const SectionTitle('Worship & learning'),
+              LayoutBuilder(builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 560 ? 4 : 2;
+                final items = <_HomeAction>[
+                  _HomeAction('Quran', Icons.menu_book_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Quran', icon: Icons.menu_book, detail: 'Verified Quran text, translations and audio require a selected trusted source.')))),
+                  _HomeAction('Duas', Icons.volunteer_activism_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DuasPage()))),
+                  _HomeAction('Janaza', Icons.mosque_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JanazaPage()))),
+                  _HomeAction('Hadith Library', Icons.auto_stories_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DeenKhazanaPage()))),
+                  _HomeAction('Tasbih', Icons.touch_app_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TasbihPage()))),
+                  _HomeAction('Qibla', Icons.explore_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QiblaPage()))),
+                  _HomeAction('Zakat', Icons.account_balance_wallet_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ZakatPage()))),
+                  _HomeAction('Calendar', Icons.calendar_month_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar will be connected after calendar method and local settings are selected.')))),
+                ];
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: items.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns, crossAxisSpacing: 11, mainAxisSpacing: 11,
+                    mainAxisExtent: 104,
+                  ),
+                  itemBuilder: (context, index) => _HomeActionTile(action: items[index]),
+                );
+              }),
+              const SizedBox(height: 20),
+              DeenCard(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JanazaPage())),
+                child: Row(children: [
+                  const Icon(Icons.menu_book_outlined, color: gold, size: 30),
+                  const SizedBox(width: 13),
+                  const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('Learn step by step', style: TextStyle(color: cream, fontWeight: FontWeight.bold, fontSize: 15)),
+                    SizedBox(height: 4),
+                    Text('Janaza guide and essential duas', style: TextStyle(color: cream, fontSize: 12)),
+                  ])),
+                  const Icon(Icons.arrow_forward_ios_rounded, color: gold, size: 16),
+                ]),
+              ),
+            ]),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _HomeAction {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+  const _HomeAction(this.title, this.icon, this.onTap);
+}
+
+class _HomeActionTile extends StatelessWidget {
+  final _HomeAction action;
+  const _HomeActionTile({required this.action});
+  @override
+  Widget build(BuildContext context) => DeenCard(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+    onTap: action.onTap,
+    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Icon(action.icon, color: gold, size: 27),
+      const SizedBox(height: 9),
+      Text(action.title, textAlign: TextAlign.center,
+        maxLines: 2, overflow: TextOverflow.ellipsis,
+        style: const TextStyle(color: cream, fontSize: 12, fontWeight: FontWeight.w600)),
+    ]),
+  );
 }
 
 class PrayerRow extends StatelessWidget {
