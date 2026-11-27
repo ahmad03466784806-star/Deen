@@ -49,7 +49,7 @@ class MainShell extends StatefulWidget {
 }
 class _MainShellState extends State<MainShell> {
   final AudioPlayer _openingDaroodPlayer = AudioPlayer();
-  static const String _openingDaroodUrl = 'https://salawat.com/wp-content/uploads/2019/05/durood-ibrahim.mp3';
+  static const String _openingDaroodUrl = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Muhammad_Peace_be_Upon_Him-ar.wav';
   bool _daroodAutoplayEnabled = true;
   bool _daroodPlaying = false;
   String? _daroodAudioMessage;
