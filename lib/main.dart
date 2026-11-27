@@ -270,7 +270,7 @@ class HomePage extends StatelessWidget {
                 ]),
                 if (daroodAudioMessage != null)
                   Text(daroodAudioMessage!, style: const TextStyle(color: gold, fontSize: 11)),
-                const Text('Audio streams online. The written Darood remains available without internet.',
+                const Text('Audio streams online. The written Darood remains available without internet. Audio: باسم, Wikimedia Commons (CC BY 4.0).',
                   style: TextStyle(color: Colors.white54, fontSize: 10)),
               ])),
               const SizedBox(height: 14),
