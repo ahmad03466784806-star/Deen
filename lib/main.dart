@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'quran_page.dart';
+import 'prayer_times_page.dart';
 import 'janaza_page.dart';
 import 'duas_page.dart';
 import 'deen_khazana_page.dart';
@@ -196,10 +198,7 @@ class HomePage extends StatelessWidget {
                 const Expanded(child: SectionTitle('Prayer times')),
                 TextButton.icon(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => const SimpleInfoPage(
-                      title: 'Prayer time settings', icon: Icons.access_time,
-                      detail: 'Choose your city, calculation method and Asr juristic setting before displaying prayer times.',
-                    ),
+                    builder: (_) => const PrayerTimesPage(),
                   )),
                   icon: const Icon(Icons.tune, size: 16, color: gold),
                   label: const Text('Setup', style: TextStyle(color: gold)),
@@ -226,7 +225,7 @@ class HomePage extends StatelessWidget {
               LayoutBuilder(builder: (context, constraints) {
                 final columns = constraints.maxWidth >= 560 ? 4 : 2;
                 final items = <_HomeAction>[
-                  _HomeAction('Quran', Icons.menu_book_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Quran', icon: Icons.menu_book, detail: 'Verified Quran text, translations and audio require a selected trusted source.')))),
+                  _HomeAction('Quran', Icons.menu_book_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuranPage()))),
                   _HomeAction('Duas', Icons.volunteer_activism_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DuasPage()))),
                   _HomeAction('Janaza', Icons.mosque_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JanazaPage()))),
                   _HomeAction('Hadith Library', Icons.auto_stories_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DeenKhazanaPage()))),
@@ -469,9 +468,10 @@ class MorePage extends StatelessWidget {
     ...[
       ('Qibla Direction', Icons.explore, const QiblaPage()),
       ('Digital Tasbih', Icons.touch_app, const TasbihPage()),
-      ('Quran', Icons.menu_book, const SimpleInfoPage(title: 'Quran', icon: Icons.menu_book, detail: 'Quran reading and audio module.')),
+      ('Quran', Icons.menu_book, const QuranPage()),
       ('Duas & Azkar', Icons.volunteer_activism, const DuasPage()),
-      ('Islamic Calendar', Icons.calendar_month, const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar and events.')),
+      ('Prayer Times', Icons.access_time, const PrayerTimesPage()),
+      ('Islamic Calendar', Icons.calendar_month, const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar and events will be connected to a verified calendar source.')),
       ('Zakat Calculator', Icons.account_balance_wallet, const ZakatPage()),
       ('Janaza ka tariqa', Icons.mosque_outlined, const JanazaPage()),
       ('Settings', Icons.settings, const SimpleInfoPage(title: 'Settings', icon: Icons.settings, detail: 'App preferences, language, privacy and notifications.')),
