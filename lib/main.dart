@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'quran_page.dart';
 import 'prayer_times_page.dart';
+import 'islamic_calendar_page.dart';
 import 'janaza_page.dart';
 import 'duas_page.dart';
 import 'deen_khazana_page.dart';
@@ -232,7 +233,7 @@ class HomePage extends StatelessWidget {
                   _HomeAction('Tasbih', Icons.touch_app_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TasbihPage()))),
                   _HomeAction('Qibla', Icons.explore_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QiblaPage()))),
                   _HomeAction('Zakat', Icons.account_balance_wallet_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ZakatPage()))),
-                  _HomeAction('Calendar', Icons.calendar_month_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar will be connected after calendar method and local settings are selected.')))),
+                  _HomeAction('Calendar', Icons.calendar_month_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const IslamicCalendarPage()))),
                 ];
                 return GridView.builder(
                   shrinkWrap: true,
@@ -471,7 +472,7 @@ class MorePage extends StatelessWidget {
       ('Quran', Icons.menu_book, const QuranPage()),
       ('Duas & Azkar', Icons.volunteer_activism, const DuasPage()),
       ('Prayer Times', Icons.access_time, const PrayerTimesPage()),
-      ('Islamic Calendar', Icons.calendar_month, const SimpleInfoPage(title: 'Islamic Calendar', icon: Icons.calendar_month, detail: 'Hijri calendar and events will be connected to a verified calendar source.')),
+      ('Islamic Calendar', Icons.calendar_month, const IslamicCalendarPage()),
       ('Zakat Calculator', Icons.account_balance_wallet, const ZakatPage()),
       ('Janaza ka tariqa', Icons.mosque_outlined, const JanazaPage()),
       ('Settings', Icons.settings, const SimpleInfoPage(title: 'Settings', icon: Icons.settings, detail: 'App preferences, language, privacy and notifications.')),
