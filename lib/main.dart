@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'kalimaat_page.dart';
 import 'quran_page.dart';
 import 'prayer_times_page.dart';
 import 'islamic_calendar_page.dart';
@@ -46,6 +48,25 @@ class MainShell extends StatefulWidget {
   State<MainShell> createState() => _MainShellState();
 }
 class _MainShellState extends State<MainShell> {
+  final AudioPlayer _openingDaroodPlayer = AudioPlayer();
+  static const String _openingDaroodUrl = 'https://salawat.com/wp-content/uploads/2019/05/durood-ibrahim.mp3';
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        await _openingDaroodPlayer.setReleaseMode(ReleaseMode.stop);
+        await _openingDaroodPlayer.play(UrlSource(_openingDaroodUrl));
+      } catch (_) {
+        // Audio needs an internet connection; the text remains available offline.
+      }
+    });
+  }
+  @override
+  void dispose() {
+    _openingDaroodPlayer.dispose();
+    super.dispose();
+  }
   int index = 0;
   final pages = const [HomePage(), FilesPage(), CommunityPage(), MorePage()];
   @override
@@ -226,6 +247,7 @@ class HomePage extends StatelessWidget {
               LayoutBuilder(builder: (context, constraints) {
                 final columns = constraints.maxWidth >= 560 ? 4 : 2;
                 final items = <_HomeAction>[
+                  _HomeAction('6 Kalimas + Ayatul Kursi + Darood', Icons.auto_stories_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KalimaatPage()))),
                   _HomeAction('Quran', Icons.menu_book_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuranPage()))),
                   _HomeAction('Duas', Icons.volunteer_activism_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DuasPage()))),
                   _HomeAction('Janaza', Icons.mosque_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JanazaPage()))),
@@ -512,6 +534,7 @@ class MorePage extends StatelessWidget {
     ...[
       ('Qibla Direction', Icons.explore, const QiblaPage()),
       ('Digital Tasbih', Icons.touch_app, const TasbihPage()),
+      ('6 Kalimas, Ayatul Kursi & Darood', Icons.auto_stories, const KalimaatPage()),
       ('Quran', Icons.menu_book, const QuranPage()),
       ('Duas & Azkar', Icons.volunteer_activism, const DuasPage()),
       ('Prayer Times', Icons.access_time, const PrayerTimesPage()),
