@@ -45,7 +45,7 @@ class KalimaatPage extends StatelessWidget {
       const _SectionCard(title: 'آیت الکرسی', subtitle: 'Ayatul Kursi • Surah Al-Baqarah 2:255',
         arabic: _ayat,
         urdu: 'اللہ کے سوا کوئی معبود نہیں، وہ زندہ اور سب کو قائم رکھنے والا ہے۔ اسے نہ اونگھ آتی ہے نہ نیند۔ آسمانوں اور زمین میں جو کچھ ہے اسی کا ہے۔ اس کی اجازت کے بغیر کون اس کے حضور سفارش کر سکتا ہے؟ وہ جانتا ہے جو ان کے آگے اور پیچھے ہے، اور وہ اس کے علم میں سے اتنا ہی جان سکتے ہیں جتنا وہ چاہے۔ اس کی کرسی آسمانوں اور زمین کو گھیرے ہوئے ہے، اور ان کی حفاظت اسے نہیں تھکاتی۔ وہ بلند اور عظمت والا ہے۔',
-        english: 'Allah—there is no deity except Him, the Ever-Living, the Sustainer of all. Neither drowsiness nor sleep overtakes Him. To Him belongs whatever is in the heavens and earth... He is the Most High, the Most Great.'),
+        english: 'Allah—there is no deity except Him, the Ever-Living, the Sustainer of all. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass nothing of His knowledge except what He wills. His Kursi extends over the heavens and the earth, and their preservation does not tire Him. He is the Most High, the Most Great.'),
       const SizedBox(height: 12),
       const _SectionCard(title: 'درودِ ابراہیمی', subtitle: 'Durood-e-Ibrahimi • Salah',
         arabic: _darood,
@@ -59,7 +59,7 @@ class KalimaatPage extends StatelessWidget {
         const SizedBox(height: 10),
       ],
       const SizedBox(height: 8),
-      const Text('Quran reference: Al-Baqarah 2:255. Durood-e-Ibrahimi wording is reported in the hadith of Ka‘b ibn ‘Ujrah (Sahih al-Bukhari and Sahih Muslim). The six Kalimas are a traditional South Asian teaching collection; they are not six Quranic verses. Please learn pronunciation from a qualified teacher.',
+      const Text('Quran reference: Al-Baqarah 2:255. English meaning of Ayatul Kursi: Sahih International (complete verse meaning). Durood-e-Ibrahimi is taught in the hadith of Ka‘b ibn ‘Ujrah (Sahih al-Bukhari and Sahih Muslim; wording should be checked against the selected edition). The six Kalimas are a traditional South Asian teaching collection, not six Quranic verses. Please learn pronunciation from a qualified teacher.',
         style: TextStyle(color: Colors.white60, fontSize: 11, height: 1.5)),
     ]),
   );
