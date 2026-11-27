@@ -50,25 +50,58 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   final AudioPlayer _openingDaroodPlayer = AudioPlayer();
   static const String _openingDaroodUrl = 'https://salawat.com/wp-content/uploads/2019/05/durood-ibrahim.mp3';
+  bool _daroodAutoplayEnabled = true;
+  bool _daroodPlaying = false;
+  String? _daroodAudioMessage;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        await _openingDaroodPlayer.setReleaseMode(ReleaseMode.stop);
-        await _openingDaroodPlayer.play(UrlSource(_openingDaroodUrl));
-      } catch (_) {
-        // Audio needs an internet connection; the text remains available offline.
-      }
+      await _openingDaroodPlayer.setReleaseMode(ReleaseMode.stop);
+      _openingDaroodPlayer.onPlayerStateChanged.listen((state) {
+        if (mounted) setState(() => _daroodPlaying = state == PlayerState.playing);
+      });
+      if (_daroodAutoplayEnabled) await _playOpeningDarood();
     });
   }
+  Future<void> _playOpeningDarood() async {
+    try {
+      await _openingDaroodPlayer.play(UrlSource(_openingDaroodUrl));
+      if (mounted) setState(() => _daroodAudioMessage = null);
+    } catch (_) {
+      if (mounted) setState(() => _daroodAudioMessage = 'Audio needs an internet connection. You can read the complete Darood below.');
+    }
+  }
+
+  Future<void> _setDaroodAutoplay(bool enabled) async {
+    setState(() { _daroodAutoplayEnabled = enabled; _daroodAudioMessage = null; });
+    if (enabled) {
+      await _playOpeningDarood();
+    } else {
+      await _openingDaroodPlayer.stop();
+    }
+  }
+
+  Future<void> _toggleDaroodPlayback() async {
+    if (_daroodPlaying) {
+      await _openingDaroodPlayer.pause();
+    } else {
+      await _playOpeningDarood();
+    }
+  }
+
   @override
   void dispose() {
     _openingDaroodPlayer.dispose();
     super.dispose();
   }
   int index = 0;
-  final pages = const [HomePage(), FilesPage(), CommunityPage(), MorePage()];
+  List<Widget> get pages => [
+    HomePage(daroodAutoplayEnabled: _daroodAutoplayEnabled, daroodPlaying: _daroodPlaying,
+      daroodAudioMessage: _daroodAudioMessage, onDaroodAutoplayChanged: _setDaroodAutoplay,
+      onDaroodPlaybackTap: _toggleDaroodPlayback),
+    const FilesPage(), const CommunityPage(), const MorePage(),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,7 +176,13 @@ class DeenCard extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final bool daroodAutoplayEnabled;
+  final bool daroodPlaying;
+  final String? daroodAudioMessage;
+  final ValueChanged<bool> onDaroodAutoplayChanged;
+  final VoidCallback onDaroodPlaybackTap;
+  const HomePage({super.key, required this.daroodAutoplayEnabled, required this.daroodPlaying,
+    required this.daroodAudioMessage, required this.onDaroodAutoplayChanged, required this.onDaroodPlaybackTap});
 
   @override
   Widget build(BuildContext context) => DeenBackground(
@@ -215,7 +254,26 @@ class HomePage extends StatelessWidget {
                   ]),
                 ]),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              DeenCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  const Icon(Icons.volume_up_rounded, color: gold, size: 23),
+                  const SizedBox(width: 9),
+                  const Expanded(child: Text('Opening Darood audio', style: TextStyle(color: cream, fontWeight: FontWeight.bold))),
+                  IconButton(onPressed: onDaroodPlaybackTap,
+                    icon: Icon(daroodPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
+                      color: gold, size: 30), tooltip: daroodPlaying ? 'Pause Darood' : 'Play Darood'),
+                ]),
+                Row(children: [
+                  const Expanded(child: Text('Play automatically when DEEN opens', style: TextStyle(color: cream, fontSize: 12))),
+                  Switch(value: daroodAutoplayEnabled, onChanged: onDaroodAutoplayChanged, activeColor: gold),
+                ]),
+                if (daroodAudioMessage != null)
+                  Text(daroodAudioMessage!, style: const TextStyle(color: gold, fontSize: 11)),
+                const Text('Audio streams online. The written Darood remains available without internet.',
+                  style: TextStyle(color: Colors.white54, fontSize: 10)),
+              ])),
+              const SizedBox(height: 14),
               Row(children: [
                 const Expanded(child: SectionTitle('Prayer times')),
                 TextButton.icon(
