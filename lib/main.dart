@@ -424,6 +424,49 @@ class _CommunityPageState extends State<CommunityPage> {
   final controller = TextEditingController();
   final List<String> posts = ['Assalamu Alaikum! May Allah bless your day.', 'Reminder: Make time for Quran recitation today.'];
   final Set<int> liked = {};
+  final Map<int, List<String>> comments = {};
+
+  void commentOn(int postIndex) {
+    final input = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: deep2,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, refreshSheet) => Padding(
+          padding: EdgeInsets.fromLTRB(18, 18, 18, MediaQuery.of(sheetContext).viewInsets.bottom + 18),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            const Text('Comments', style: TextStyle(color: cream, fontSize: 19, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            if ((comments[postIndex] ?? []).isEmpty)
+              const Text('Abhi koi comment nahi. Pehla comment karein.', style: TextStyle(color: Colors.white70))
+            else
+              ...comments[postIndex]!.map((comment) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(backgroundColor: emerald, child: Icon(Icons.person, color: cream)),
+                title: Text(comment, style: const TextStyle(color: cream)),
+              )),
+            const SizedBox(height: 8),
+            TextField(controller: input, maxLines: 2, decoration: const InputDecoration(hintText: 'Write a respectful comment…')),
+            const SizedBox(height: 10),
+            FilledButton(
+              onPressed: () {
+                final value = input.text.trim();
+                if (value.isEmpty) return;
+                setState(() => comments.putIfAbsent(postIndex, () => []).add(value));
+                input.clear();
+                refreshSheet(() {});
+              },
+              child: const Text('Add comment'),
+            ),
+            const SizedBox(height: 4),
+            const Text('Comments are currently stored in this app session only. Firebase sync is not connected yet.',
+              style: TextStyle(color: Colors.white54, fontSize: 10)),
+          ]),
+        ),
+      ),
+    ).whenComplete(input.dispose);
+  }
   void compose() => showModalBottomSheet(context: context, isScrollControlled: true, backgroundColor: deep2, builder: (ctx) => Padding(
     padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
     child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -450,8 +493,8 @@ class _CommunityPageState extends State<CommunityPage> {
             TextButton.icon(onPressed: () => setState(() { if (liked.contains(i)) { liked.remove(i); } else { liked.add(i); } }),
               icon: Icon(liked.contains(i) ? Icons.favorite : Icons.favorite_border, color: liked.contains(i) ? Colors.pinkAccent : gold),
               label: Text(liked.contains(i) ? 'Liked' : 'Like')),
-            TextButton.icon(onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Comments module will be connected.'))),
-              icon: const Icon(Icons.comment_outlined, color: gold), label: const Text('Comment')),
+            TextButton.icon(onPressed: () => commentOn(i),
+              icon: const Icon(Icons.comment_outlined, color: gold), label: Text('Comment ${comments[i]?.length ?? 0}')),
             TextButton.icon(onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Share module will be connected.'))),
               icon: const Icon(Icons.share_outlined, color: gold), label: const Text('Share')),
           ]),
