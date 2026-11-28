@@ -411,7 +411,8 @@ class _QuranSurahPageState extends State<QuranSurahPage> {
                           ),
                         ),
                       ),
-                      for (final verse in verses)
+                      for (final verse in verses.where((v) =>
+                          (v['number'] as int) >= widget.startAyah))
                         _verseCard(verse as Map<String, dynamic>),
                     ],
                   ),
