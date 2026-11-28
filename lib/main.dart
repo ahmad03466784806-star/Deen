@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'prayer_times_service.dart';
 import 'kalimaat_page.dart';
 import 'quran_page.dart';
@@ -50,59 +49,17 @@ class MainShell extends StatefulWidget {
   State<MainShell> createState() => _MainShellState();
 }
 class _MainShellState extends State<MainShell> {
-  final AudioPlayer _openingDaroodPlayer = AudioPlayer();
-  static const String _openingDaroodUrl = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Muhammad_Peace_be_Upon_Him-ar.wav';
-  bool _daroodAutoplayEnabled = true;
-  bool _daroodPlaying = false;
-  String? _daroodAudioMessage;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       PrayerTimesService.instance.initialize();
-      await _openingDaroodPlayer.setReleaseMode(ReleaseMode.stop);
-      _openingDaroodPlayer.onPlayerStateChanged.listen((state) {
-        if (mounted) setState(() => _daroodPlaying = state == PlayerState.playing);
-      });
-      if (_daroodAutoplayEnabled) await _playOpeningDarood();
     });
   }
-  Future<void> _playOpeningDarood() async {
-    try {
-      await _openingDaroodPlayer.play(UrlSource(_openingDaroodUrl));
-      if (mounted) setState(() => _daroodAudioMessage = null);
-    } catch (_) {
-      if (mounted) setState(() => _daroodAudioMessage = 'Audio needs an internet connection. You can read the complete Darood below.');
-    }
-  }
 
-  Future<void> _setDaroodAutoplay(bool enabled) async {
-    setState(() { _daroodAutoplayEnabled = enabled; _daroodAudioMessage = null; });
-    if (enabled) {
-      await _playOpeningDarood();
-    } else {
-      await _openingDaroodPlayer.stop();
-    }
-  }
-
-  Future<void> _toggleDaroodPlayback() async {
-    if (_daroodPlaying) {
-      await _openingDaroodPlayer.pause();
-    } else {
-      await _playOpeningDarood();
-    }
-  }
-
-  @override
-  void dispose() {
-    _openingDaroodPlayer.dispose();
-    super.dispose();
-  }
   int index = 0;
   List<Widget> get pages => [
-    HomePage(daroodAutoplayEnabled: _daroodAutoplayEnabled, daroodPlaying: _daroodPlaying,
-      daroodAudioMessage: _daroodAudioMessage, onDaroodAutoplayChanged: _setDaroodAutoplay,
-      onDaroodPlaybackTap: _toggleDaroodPlayback),
+    const HomePage(),
     const FilesPage(), const CommunityPage(), const MorePage(),
   ];
   @override
@@ -179,13 +136,7 @@ class DeenCard extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  final bool daroodAutoplayEnabled;
-  final bool daroodPlaying;
-  final String? daroodAudioMessage;
-  final ValueChanged<bool> onDaroodAutoplayChanged;
-  final VoidCallback onDaroodPlaybackTap;
-  const HomePage({super.key, required this.daroodAutoplayEnabled, required this.daroodPlaying,
-    required this.daroodAudioMessage, required this.onDaroodAutoplayChanged, required this.onDaroodPlaybackTap});
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) => DeenBackground(
@@ -264,33 +215,14 @@ class HomePage extends StatelessWidget {
                 ]),
               ),
               const SizedBox(height: 16),
-              DeenCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  const Icon(Icons.volume_up_rounded, color: gold, size: 23),
-                  const SizedBox(width: 9),
-                  const Expanded(child: Text('Opening Darood audio', style: TextStyle(color: cream, fontWeight: FontWeight.bold))),
-                  IconButton(onPressed: onDaroodPlaybackTap,
-                    icon: Icon(daroodPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
-                      color: gold, size: 30), tooltip: daroodPlaying ? 'Pause Darood' : 'Play Darood'),
-                ]),
-                Row(children: [
-                  const Expanded(child: Text('Play automatically when DEEN opens', style: TextStyle(color: cream, fontSize: 12))),
-                  Switch(value: daroodAutoplayEnabled, onChanged: onDaroodAutoplayChanged, activeColor: gold),
-                ]),
-                if (daroodAudioMessage != null)
-                  Text(daroodAudioMessage!, style: const TextStyle(color: gold, fontSize: 11)),
-                const Text('Audio streams online. The written Darood remains available without internet. Audio: باسم, Wikimedia Commons (CC BY 4.0).',
-                  style: TextStyle(color: Colors.white54, fontSize: 10)),
-              ])),
-              const SizedBox(height: 14),
               Row(children: [
                 const Expanded(child: SectionTitle('Prayer times')),
                 TextButton.icon(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(
                     builder: (_) => const PrayerTimesPage(),
                   )),
-                  icon: const Icon(Icons.tune, size: 16, color: gold),
-                  label: const Text('Setup', style: TextStyle(color: gold)),
+                  icon: const Icon(Icons.tune, size: 18, color: gold),
+                  label: const Text('Setup', style: TextStyle(color: gold, fontSize: 14)),
                 ),
               ]),
               AnimatedBuilder(
@@ -298,42 +230,41 @@ class HomePage extends StatelessWidget {
                 builder: (context, _) {
                   final prayerService = PrayerTimesService.instance;
                   final times = prayerService.timings;
-                  return Column(children: [
-                    DeenCard(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                      child: Column(children: [
-                        PrayerRow('Fajr', times?['Fajr']?.toString() ?? '—:—', Icons.nights_stay_outlined),
-                        const Divider(color: Colors.white12, height: 1),
-                        PrayerRow('Dhuhr', times?['Dhuhr']?.toString() ?? '—:—', Icons.wb_sunny_outlined),
-                        const Divider(color: Colors.white12, height: 1),
-                        PrayerRow('Asr', times?['Asr']?.toString() ?? '—:—', Icons.sunny),
-                        const Divider(color: Colors.white12, height: 1),
-                        PrayerRow('Maghrib', times?['Maghrib']?.toString() ?? '—:—', Icons.wb_twilight),
-                        const Divider(color: Colors.white12, height: 1),
-                        PrayerRow('Isha', times?['Isha']?.toString() ?? '—:—', Icons.dark_mode_outlined),
-                      ]),
-                    ),
-                    const SizedBox(height: 8),
-                    if (prayerService.loading)
-                      const LinearProgressIndicator(minHeight: 2, color: gold, backgroundColor: Colors.white12),
-                    if (prayerService.errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 7),
-                        child: Text(prayerService.errorMessage!, style: TextStyle(color: cream.withOpacity(.65), fontSize: 11)),
-                      )
-                    else
-                      Text(
-                        prayerService.timings == null
-                            ? 'Allow location access or open Setup to enter your city.'
-                            : '${prayerService.locationLabel} • Hanafi Asr setting',
-                        style: TextStyle(color: cream.withOpacity(.58), fontSize: 11, height: 1.4),
-                      ),
-                  ]);
+                  return DeenCard(
+                    padding: const EdgeInsets.fromLTRB(18, 14, 18, 14),
+                    child: Column(children: [
+                      PrayerRow('Fajr', times?['Fajr']?.toString() ?? '—:—', Icons.nights_stay_outlined),
+                      const Divider(color: Colors.white12, height: 1),
+                      PrayerRow('Dhuhr', times?['Dhuhr']?.toString() ?? '—:—', Icons.wb_sunny_outlined),
+                      const Divider(color: Colors.white12, height: 1),
+                      PrayerRow('Asr', times?['Asr']?.toString() ?? '—:—', Icons.sunny),
+                      const Divider(color: Colors.white12, height: 1),
+                      PrayerRow('Maghrib', times?['Maghrib']?.toString() ?? '—:—', Icons.wb_twilight),
+                      const Divider(color: Colors.white12, height: 1),
+                      PrayerRow('Isha', times?['Isha']?.toString() ?? '—:—', Icons.dark_mode_outlined),
+                      const SizedBox(height: 8),
+                      if (prayerService.loading)
+                        const LinearProgressIndicator(minHeight: 2, color: gold, backgroundColor: Colors.white12),
+                      if (prayerService.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 7),
+                          child: Text(prayerService.errorMessage!, style: TextStyle(color: cream.withOpacity(.65), fontSize: 11)),
+                        )
+                      else
+                        Text(
+                          prayerService.timings == null
+                              ? 'Allow location access or open Setup to enter your city.'
+                              : '${prayerService.locationLabel} • Hanafi Asr setting',
+                          style: TextStyle(color: cream.withOpacity(.58), fontSize: 11, height: 1.4),
+                        ),
+                    ]),
+                  );
                 },
               ),
+              const SizedBox(height: 18),
               const SectionTitle('Worship & learning'),
               LayoutBuilder(builder: (context, constraints) {
-                final columns = constraints.maxWidth >= 560 ? 4 : 2;
+                final columns = constraints.maxWidth >= 900 ? 3 : 2;
                 final items = <_HomeAction>[
                   _HomeAction('6 Kalimas + Ayatul Kursi + Darood', Icons.auto_stories_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KalimaatPage()))),
                   _HomeAction('Quran', Icons.menu_book_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuranPage()))),
@@ -351,7 +282,7 @@ class HomePage extends StatelessWidget {
                   itemCount: items.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: columns, crossAxisSpacing: 11, mainAxisSpacing: 11,
-                    mainAxisExtent: 104,
+                    mainAxisExtent: 142,
                   ),
                   itemBuilder: (context, index) => _HomeActionTile(action: items[index]),
                 );
@@ -390,14 +321,14 @@ class _HomeActionTile extends StatelessWidget {
   const _HomeActionTile({required this.action});
   @override
   Widget build(BuildContext context) => DeenCard(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
     onTap: action.onTap,
     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Icon(action.icon, color: gold, size: 27),
-      const SizedBox(height: 9),
+      Icon(action.icon, color: gold, size: 36),
+      const SizedBox(height: 12),
       Text(action.title, textAlign: TextAlign.center,
         maxLines: 2, overflow: TextOverflow.ellipsis,
-        style: const TextStyle(color: cream, fontSize: 12, fontWeight: FontWeight.w600)),
+        style: const TextStyle(color: cream, fontSize: 14, fontWeight: FontWeight.w700)),
     ]),
   );
 }
@@ -426,7 +357,7 @@ class QuickTile extends StatelessWidget {
     padding: const EdgeInsets.all(10), onTap: onTap,
     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Icon(icon, color: gold, size: 27), const SizedBox(height: 8),
-      Text(title, style: const TextStyle(color: cream, fontSize: 12, fontWeight: FontWeight.w600)),
+      Text(title, style: const TextStyle(color: cream, fontSize: 14, fontWeight: FontWeight.w700)),
     ]),
   ));
 }
