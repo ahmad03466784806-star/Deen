@@ -33,19 +33,19 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     setState(() { _loading = true; _error = null; _times = null; });
     try {
       final now = DateTime.now();
-      final date = '\${now.day.toString().padLeft(2, '0')}-\${now.month.toString().padLeft(2, '0')}-\${now.year}';
+      final date = "${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2, '0')}-${now.year}";
       final uri = Uri.https('api.aladhan.com', '/v1/timingsByCity/$date', {
         'city': city, 'country': country, 'method': '$_method', 'school': '$_school',
       });
       final response = await http.get(uri);
-      if (response.statusCode != 200) throw Exception('Prayer-time service returned \${response.statusCode}.');
+      if (response.statusCode != 200) throw Exception('Prayer-time service returned ${response.statusCode}.');
       final body = jsonDecode(response.body) as Map<String, dynamic>;
       if (body['code'] != 200) throw Exception(body['data']?['message'] ?? 'Could not calculate prayer times.');
       final data = body['data'] as Map<String, dynamic>;
       if (!mounted) return;
       setState(() {
         _times = Map<String, dynamic>.from(data['timings'] as Map);
-        _date = '\${data['date']['readable']} • \${data['date']['hijri']['date']} AH';
+        _date = "${data['date']['readable']} • ${data['date']['hijri']['date']} AH";
       });
     } catch (e) {
       if (mounted) setState(() => _error = 'Prayer times load nahi ho sake. $e');
@@ -97,7 +97,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
           for (final prayer in _prayers)
             ListTile(contentPadding: EdgeInsets.zero, leading: Icon(prayer.$2, color: _pGold),
               title: Text(prayer.$1, style: const TextStyle(color: _pCream)),
-              trailing: Text('\${_times![prayer.$1] ?? '—'}', style: const TextStyle(color: _pGold, fontWeight: FontWeight.bold, fontSize: 16))),
+              trailing: Text("${_times![prayer.$1] ?? '—'}", style: const TextStyle(color: _pGold, fontWeight: FontWeight.bold, fontSize: 16))),
         ]))),
         const SizedBox(height: 10),
         const Text('Times are retrieved from AlAdhan and depend on the selected city, calculation method and Asr school. Confirm local mosque timings where needed. Alarm scheduling is a separate feature and is not enabled by this screen.',
