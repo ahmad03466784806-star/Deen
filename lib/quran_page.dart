@@ -38,7 +38,7 @@ class _QuranPageState extends State<QuranPage> {
         future: _surahs,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: _qGold));
-          if (snapshot.hasError) return _QuranMessage(message: 'Quran data load nahi ho saka.\n\${snapshot.error}', action: 'Retry', onTap: () => setState(() => _surahs = _loadSurahs()));
+          if (snapshot.hasError) return _QuranMessage(message: 'Quran data load nahi ho saka.\n${snapshot.error}', action: 'Retry', onTap: () => setState(() => _surahs = _loadSurahs()));
           final query = _search.text.trim().toLowerCase();
           final list = snapshot.data!.where((item) {
             final s = item as Map<String, dynamic>;
@@ -54,10 +54,10 @@ class _QuranPageState extends State<QuranPage> {
               final s = list[index] as Map<String, dynamic>;
               return Card(color: _qGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: _qGold.withValues(alpha: .18))),
                 child: ListTile(
-                  leading: CircleAvatar(backgroundColor: _qGold, foregroundColor: _qDeep, child: Text('\${s['number']}')),
-                  title: Text('\${s['englishName']}', style: const TextStyle(color: _qCream, fontWeight: FontWeight.bold)),
-                  subtitle: Text('\${s['englishNameTranslation']} • \${s['numberOfAyahs']} Ayat', style: const TextStyle(color: Colors.white70)),
-                  trailing: Text('\${s['name']}', textDirection: TextDirection.rtl, style: const TextStyle(color: _qGold, fontSize: 21)),
+                  leading: CircleAvatar(backgroundColor: _qGold, foregroundColor: _qDeep, child: Text("${s['number']}")),
+                  title: Text("${s['englishName']}", style: const TextStyle(color: _qCream, fontWeight: FontWeight.bold)),
+                  subtitle: Text("${s['englishNameTranslation']} • ${s['numberOfAyahs']} Ayat", style: const TextStyle(color: Colors.white70)),
+                  trailing: Text("${s['name']}", textDirection: TextDirection.rtl, style: const TextStyle(color: _qGold, fontSize: 21)),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => QuranSurahPage(number: s['number'] as int, name: s['englishName'] as String, arabicName: s['name'] as String))),
                 ));
             },
@@ -82,7 +82,7 @@ class QuranSurahPage extends StatefulWidget {
 class _QuranSurahPageState extends State<QuranSurahPage> {
   late Future<List<dynamic>> _verses = _loadVerses();
   Future<List<dynamic>> _loadVerses() async {
-    final path = '/v1/surah/\${widget.number}/editions/quran-uthmani,ur.jalandhry,en.sahih';
+    final path = '/v1/surah/${widget.number}/editions/quran-uthmani,ur.jalandhry,en.sahih';
     final response = await http.get(Uri.https('api.alquran.cloud', path));
     if (response.statusCode != 200) throw Exception('Unable to retrieve this Surah.');
     final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -106,17 +106,17 @@ class _QuranSurahPageState extends State<QuranSurahPage> {
       future: _verses,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: _qGold));
-        if (snapshot.hasError) return _QuranMessage(message: 'Ayat load nahi ho sakin.\n\${snapshot.error}', action: 'Retry', onTap: () => setState(() => _verses = _loadVerses()));
+        if (snapshot.hasError) return _QuranMessage(message: 'Ayat load nahi ho sakin.\n${snapshot.error}', action: 'Retry', onTap: () => setState(() => _verses = _loadVerses()));
         final verses = snapshot.data!;
         return ListView(padding: const EdgeInsets.all(14), children: [
           Card(color: _qGreen, child: Padding(padding: const EdgeInsets.all(18), child: Column(children: [
             Text(widget.arabicName, textDirection: TextDirection.rtl, style: const TextStyle(color: _qGold, fontSize: 30)),
-            const SizedBox(height: 5), Text('\${widget.name} • Surah \${widget.number}', style: const TextStyle(color: _qCream)),
+            const SizedBox(height: 5), Text('${widget.name} • Surah ${widget.number}', style: const TextStyle(color: _qCream)),
           ]))),
           for (final verse in verses)
             Card(color: _qGreen, margin: const EdgeInsets.only(top: 10),
               child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Align(alignment: Alignment.centerLeft, child: CircleAvatar(radius: 15, backgroundColor: _qGold, foregroundColor: _qDeep, child: Text('\${verse['number']}'))),
+                Align(alignment: Alignment.centerLeft, child: CircleAvatar(radius: 15, backgroundColor: _qGold, foregroundColor: _qDeep, child: Text("${verse['number']}"))),
                 const SizedBox(height: 14),
                 SelectableText(verse['arabic'] as String, textDirection: TextDirection.rtl, textAlign: TextAlign.right, style: const TextStyle(color: _qCream, fontSize: 25, height: 2)),
                 const Divider(color: Colors.white24, height: 26),
