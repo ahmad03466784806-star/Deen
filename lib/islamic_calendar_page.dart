@@ -27,13 +27,13 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
     }
     setState(() { _loading = true; _error = null; });
     try {
-      final uri = Uri.https('api.aladhan.com', '/v1/calendarByCity/\${_month.year}/\${_month.month}', {
+      final uri = Uri.https('api.aladhan.com', '/v1/calendarByCity/${_month.year}/${_month.month}', {
         'city': _city.text.trim(),
         'country': _country.text.trim(),
         'method': '1',
       });
       final response = await http.get(uri);
-      if (response.statusCode != 200) throw Exception('Calendar service returned \${response.statusCode}.');
+      if (response.statusCode != 200) throw Exception('Calendar service returned ${response.statusCode}.');
       final json = jsonDecode(response.body) as Map<String, dynamic>;
       if (json['code'] != 200) throw Exception('Calendar data is unavailable.');
       if (!mounted) return;
@@ -80,7 +80,7 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
       const SizedBox(height: 18),
       Row(children: [
         IconButton(onPressed: () => _changeMonth(-1), icon: const Icon(Icons.chevron_left, color: _cGold)),
-        Expanded(child: Text('\${_month.year}-\${_month.month.toString().padLeft(2, '0')}',
+        Expanded(child: Text("${_month.year}-${_month.month.toString().padLeft(2, '0')}",
           textAlign: TextAlign.center, style: const TextStyle(color: _cCream, fontWeight: FontWeight.bold, fontSize: 18))),
         IconButton(onPressed: () => _changeMonth(1), icon: const Icon(Icons.chevron_right, color: _cGold)),
       ]),
@@ -91,10 +91,10 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             leading: CircleAvatar(backgroundColor: _cGold, foregroundColor: _cDeep,
-              child: Text('\${item['date']['gregorian']['day']}')),
-            title: Text('\${item['date']['hijri']['day']} \${item['date']['hijri']['month']['en']} \${item['date']['hijri']['year']} AH',
+              child: Text("${item['date']['gregorian']['day']}")),
+            title: Text("${item['date']['hijri']['day']} ${item['date']['hijri']['month']['en']} ${item['date']['hijri']['year']} AH",
               style: const TextStyle(color: _cGold, fontWeight: FontWeight.bold)),
-            subtitle: Text('\${item['date']['gregorian']['weekday']['en']}, \${item['date']['gregorian']['month']['en']} \${item['date']['gregorian']['day']}',
+            subtitle: Text("${item['date']['gregorian']['weekday']['en']}, ${item['date']['gregorian']['month']['en']} ${item['date']['gregorian']['day']}",
               style: const TextStyle(color: _cCream)),
             trailing: (item['date']['hijri']['holidays'] as List?)?.isNotEmpty == true
               ? const Icon(Icons.star, color: _cGold) : null,
