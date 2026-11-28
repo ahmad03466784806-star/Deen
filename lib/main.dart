@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'prayer_times_service.dart';
 import 'kalimaat_page.dart';
 import 'quran_page.dart';
 import 'prayer_times_page.dart';
@@ -58,6 +59,7 @@ class _MainShellState extends State<MainShell> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      PrayerTimesService.instance.initialize();
       await _openingDaroodPlayer.setReleaseMode(ReleaseMode.stop);
       _openingDaroodPlayer.onPlayerStateChanged.listen((state) {
         if (mounted) setState(() => _daroodPlaying = state == PlayerState.playing);
@@ -251,7 +253,13 @@ class HomePage extends StatelessWidget {
                     const Icon(Icons.calendar_month_outlined, color: gold, size: 19),
                     const SizedBox(width: 8),
                     const Expanded(child: Text('Hijri date', style: TextStyle(color: cream, fontWeight: FontWeight.w600))),
-                    Text('Location setup required', style: TextStyle(color: cream.withOpacity(.7), fontSize: 11)),
+                    AnimatedBuilder(
+                      animation: PrayerTimesService.instance,
+                      builder: (context, _) => Text(
+                        PrayerTimesService.instance.hijriDate ?? PrayerTimesService.instance.locationLabel,
+                        style: TextStyle(color: cream.withOpacity(.7), fontSize: 11),
+                      ),
+                    ),
                   ]),
                 ]),
               ),
@@ -285,23 +293,44 @@ class HomePage extends StatelessWidget {
                   label: const Text('Setup', style: TextStyle(color: gold)),
                 ),
               ]),
-              DeenCard(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                child: Column(children: const [
-                  PrayerRow('Fajr', '—:—', Icons.nights_stay_outlined),
-                  Divider(color: Colors.white12, height: 1),
-                  PrayerRow('Dhuhr', '—:—', Icons.wb_sunny_outlined),
-                  Divider(color: Colors.white12, height: 1),
-                  PrayerRow('Asr', '—:—', Icons.sunny),
-                  Divider(color: Colors.white12, height: 1),
-                  PrayerRow('Maghrib', '—:—', Icons.wb_twilight),
-                  Divider(color: Colors.white12, height: 1),
-                  PrayerRow('Isha', '—:—', Icons.dark_mode_outlined),
-                ]),
+              AnimatedBuilder(
+                animation: PrayerTimesService.instance,
+                builder: (context, _) {
+                  final prayerService = PrayerTimesService.instance;
+                  final times = prayerService.timings;
+                  return Column(children: [
+                    DeenCard(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                      child: Column(children: [
+                        PrayerRow('Fajr', times?['Fajr']?.toString() ?? '—:—', Icons.nights_stay_outlined),
+                        const Divider(color: Colors.white12, height: 1),
+                        PrayerRow('Dhuhr', times?['Dhuhr']?.toString() ?? '—:—', Icons.wb_sunny_outlined),
+                        const Divider(color: Colors.white12, height: 1),
+                        PrayerRow('Asr', times?['Asr']?.toString() ?? '—:—', Icons.sunny),
+                        const Divider(color: Colors.white12, height: 1),
+                        PrayerRow('Maghrib', times?['Maghrib']?.toString() ?? '—:—', Icons.wb_twilight),
+                        const Divider(color: Colors.white12, height: 1),
+                        PrayerRow('Isha', times?['Isha']?.toString() ?? '—:—', Icons.dark_mode_outlined),
+                      ]),
+                    ),
+                    const SizedBox(height: 8),
+                    if (prayerService.loading)
+                      const LinearProgressIndicator(minHeight: 2, color: gold, backgroundColor: Colors.white12),
+                    if (prayerService.errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 7),
+                        child: Text(prayerService.errorMessage!, style: TextStyle(color: cream.withOpacity(.65), fontSize: 11)),
+                      )
+                    else
+                      Text(
+                        prayerService.timings == null
+                            ? 'Allow location access or open Setup to enter your city.'
+                            : '${prayerService.locationLabel} • Hanafi Asr setting',
+                        style: TextStyle(color: cream.withOpacity(.58), fontSize: 11, height: 1.4),
+                      ),
+                  ]);
+                },
               ),
-              const SizedBox(height: 8),
-              Text('Prayer timings will appear after location and calculation settings are configured.',
-                style: TextStyle(color: cream.withOpacity(.58), fontSize: 11, height: 1.4)),
               const SectionTitle('Worship & learning'),
               LayoutBuilder(builder: (context, constraints) {
                 final columns = constraints.maxWidth >= 560 ? 4 : 2;
