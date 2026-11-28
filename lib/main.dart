@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'kalimaat_page.dart';
@@ -417,6 +418,14 @@ class _TasbihPageState extends State<TasbihPage> {
         items: const ['SubhanAllah', 'Alhamdulillah', 'Allahu Akbar', 'Astaghfirullah', 'La ilaha illallah'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
         onChanged: (v) => setState(() => zikr = v ?? zikr)),
       const SizedBox(height: 34),
+      DropdownButtonFormField<int>(
+        value: target,
+        dropdownColor: deep2,
+        decoration: const InputDecoration(labelText: 'Round target'),
+        items: const [33, 99, 100, 500].map((v) => DropdownMenuItem(value: v, child: Text('$v'))).toList(),
+        onChanged: (v) => setState(() { target = v ?? target; count = 0; }),
+      ),
+      const SizedBox(height: 14),
       Text(zikr, style: const TextStyle(fontSize: 22, color: gold, fontWeight: FontWeight.bold)),
       const SizedBox(height: 20),
       Text('$count', style: const TextStyle(fontSize: 76, color: cream, fontWeight: FontWeight.w300)),
@@ -441,17 +450,79 @@ class _TasbihPageState extends State<TasbihPage> {
   ));
 }
 
-class QiblaPage extends StatelessWidget {
+class QiblaPage extends StatefulWidget {
   const QiblaPage({super.key});
   @override
+  State<QiblaPage> createState() => _QiblaPageState();
+}
+
+class _QiblaPageState extends State<QiblaPage> {
+  final _latitude = TextEditingController();
+  final _longitude = TextEditingController();
+  double? _bearing;
+  String? _error;
+
+  void _calculate() {
+    final lat = double.tryParse(_latitude.text.trim());
+    final lon = double.tryParse(_longitude.text.trim());
+    if (lat == null || lon == null || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      setState(() { _error = 'Valid latitude (-90 to 90) and longitude (-180 to 180) enter karein.'; _bearing = null; });
+      return;
+    }
+    const kaabaLat = 21.4225;
+    const kaabaLon = 39.8262;
+    final phi1 = lat * math.pi / 180;
+    final phi2 = kaabaLat * math.pi / 180;
+    final deltaLon = (kaabaLon - lon) * math.pi / 180;
+    final y = math.sin(deltaLon) * math.cos(phi2);
+    final x = math.cos(phi1) * math.sin(phi2) -
+        math.sin(phi1) * math.cos(phi2) * math.cos(deltaLon);
+    final degrees = (math.atan2(y, x) * 180 / math.pi + 360) % 360;
+    setState(() { _bearing = degrees; _error = null; });
+  }
+
+  @override
+  void dispose() {
+    _latitude.dispose();
+    _longitude.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => DeenBackground(child: Scaffold(
-    backgroundColor: Colors.transparent, appBar: AppBar(title: const Text('Qibla Direction'), backgroundColor: Colors.transparent),
-    body: Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      const Icon(Icons.explore, color: gold, size: 170),
-      const SizedBox(height: 18), const Text('Qibla Compass', style: TextStyle(color: cream, fontSize: 25, fontWeight: FontWeight.bold)),
-      const SizedBox(height: 8), Text('Compass and location permissions are required for a live direction.', textAlign: TextAlign.center, style: TextStyle(color: cream.withOpacity(.65))),
-      const SizedBox(height: 20), const Text('Live direction not connected yet', style: TextStyle(color: gold)),
-    ]))),
+    backgroundColor: Colors.transparent,
+    appBar: AppBar(title: const Text('Qibla Direction'), backgroundColor: Colors.transparent),
+    body: ListView(padding: const EdgeInsets.all(22), children: [
+      const Text('Qibla bearing calculator', style: TextStyle(color: gold, fontSize: 22, fontWeight: FontWeight.bold)),
+      const SizedBox(height: 8),
+      Text('Apne current location ke latitude aur longitude enter karein. App Kaaba (21.4225° N, 39.8262° E) ki taraf true-north se bearing calculate karegi.',
+        style: TextStyle(color: cream.withOpacity(.72), height: 1.5)),
+      const SizedBox(height: 18),
+      TextField(controller: _latitude, keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+        decoration: const InputDecoration(labelText: 'Latitude', hintText: 'e.g. 31.5204')),
+      const SizedBox(height: 10),
+      TextField(controller: _longitude, keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+        decoration: const InputDecoration(labelText: 'Longitude', hintText: 'e.g. 74.3587')),
+      const SizedBox(height: 14),
+      FilledButton.icon(onPressed: _calculate, icon: const Icon(Icons.explore), label: const Text('Calculate Qibla direction'),
+        style: FilledButton.styleFrom(backgroundColor: gold, foregroundColor: deep)),
+      if (_error != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text(_error!, style: const TextStyle(color: Colors.orangeAccent))),
+      if (_bearing != null) ...[
+        const SizedBox(height: 28),
+        Center(child: SizedBox(width: 210, height: 210, child: Stack(alignment: Alignment.center, children: [
+          Container(decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: gold, width: 2), color: deep2)),
+          const Positioned(top: 12, child: Text('N', style: TextStyle(color: gold, fontWeight: FontWeight.bold, fontSize: 18))),
+          Transform.rotate(angle: _bearing! * math.pi / 180, child: const Icon(Icons.navigation, color: gold, size: 112)),
+          const Positioned(bottom: 12, child: Text('True North reference', style: TextStyle(color: cream, fontSize: 10))),
+        ]))),
+        const SizedBox(height: 18),
+        Center(child: Text('${_bearing!.toStringAsFixed(1)}°', style: const TextStyle(color: gold, fontSize: 34, fontWeight: FontWeight.bold))),
+        const Center(child: Text('Clockwise from true north', style: TextStyle(color: cream))),
+      ],
+      const SizedBox(height: 18),
+      Text('Important: Yeh bearing calculation hai, live magnetic compass nahi. Phone compass ki calibration, magnetic declination aur nearby metal/electronics direction ko affect kar sakte hain. Namaz se pehle local masjid ya trusted Qibla tool se tasdeeq karein.',
+        style: TextStyle(color: cream.withOpacity(.62), fontSize: 11, height: 1.5)),
+    ]),
   ));
 }
 
@@ -634,6 +705,16 @@ class _ZakatPageState extends State<ZakatPage> {
     double v(String s) => double.tryParse(s) ?? 0;
     return (v(cash.text) + v(goldValue.text) + v(silverValue.text) + v(investments.text) - v(debts.text)).clamp(0, double.infinity);
   }
+  @override
+  void dispose() {
+    cash.dispose();
+    goldValue.dispose();
+    silverValue.dispose();
+    investments.dispose();
+    debts.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => DeenBackground(child: Scaffold(backgroundColor: Colors.transparent,
     appBar: AppBar(title: const Text('Zakat Calculator'), backgroundColor: Colors.transparent),
